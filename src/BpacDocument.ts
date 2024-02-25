@@ -1,10 +1,5 @@
 import { BpacObject } from './BpacObject';
-import {
-    BpacCommand,
-    Connection,
-    ExportType,
-    PrintOptionConstants
-} from './util';
+import { BpacCommand, Connection, ExportType, PrintOptionConstants } from './util';
 
 export class BpacDocument {
     [Symbol.asyncDispose] = async () => {
@@ -39,7 +34,7 @@ export class BpacDocument {
 
     async GetObject (name: string) {
         const command = "IDocument::GetObject";
-        this.connection.check()
+        this.connection.check();
 
         const arg = {
             name,
@@ -52,7 +47,7 @@ export class BpacDocument {
 
     async Export (type: ExportType, filePath: string, dpi: number) {
         const command = "IDocument::Export";
-        this.connection.check()
+        this.connection.check();
 
         const arg = {
             type: 4,
@@ -67,7 +62,7 @@ export class BpacDocument {
 
     async PrintOut (copyCount: number, option: PrintOptionConstants = PrintOptionConstants.bpoAutoCut) {
         const command = "IDocument::PrintOut";
-        this.connection.check()
+        this.connection.check();
 
         const arg = {
             method: command,
@@ -93,7 +88,7 @@ export class BpacDocument {
 
     async Close () {
         const command = "IDocument::Close";
-        this.connection.check()
+        this.connection.check();
 
         const arg = {
             method: command,

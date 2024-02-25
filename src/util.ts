@@ -1,8 +1,7 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import { BpacConfig } from './config';
 
-export enum PrintOptionConstants
-{
+export enum PrintOptionConstants {
     bpoDefault = 0,
     bpoAutoCut = 1,
     bpoCutPause = 1,
@@ -25,8 +24,7 @@ export enum PrintOptionConstants
     bpoContinue = 1073741824, // 0x40000000
 }
 
-export enum ExportType
-{
+export enum ExportType {
     bexOpened,
     bexLbx,
     bexLbl,
@@ -36,28 +34,28 @@ export enum ExportType
 }
 
 export interface BpacCommand {
-    method: string
+    method: string;
 }
 
 export interface IBpacResult {
     method: string;
     ret: boolean;
 
-    [index: string]: unknown
+    [index: string]: unknown;
 }
 
 export class BpacResult<T extends object> {
     //Not Correcty Set?
     private length: number;
 
-    public value: T
+    public value: T;
 
     public method: string;
     public ret: boolean;
 
     constructor (data: Buffer) {
-        this.length = +data.toString("utf-8", 0, 4)
-        const obj: IBpacResult = JSON.parse(data.toString("utf-8", 4))
+        this.length = +data.toString("utf-8", 0, 4);
+        const obj: IBpacResult = JSON.parse(data.toString("utf-8", 4));
         this.method = obj.method;
         this.ret = obj.ret;
         delete obj.ret;
@@ -67,60 +65,63 @@ export class BpacResult<T extends object> {
 }
 
 export class Connection {
-    public available: boolean
-    public path?: string
-    public process?: ChildProcess
+    public available: boolean;
+    public path?: string;
+    public process?: ChildProcess;
 
     constructor () {
-        this.available = false
+        this.available = false;
         this.path = undefined;
         this.process = undefined;
     }
 
-    async connect() {
-        const pro = spawn(`${BpacConfig.bpacHostPath}`, { stdio: ['pipe' , 'pipe', 'pipe']});
+    async connect () {
+        if (BpacConfig.bpacHostPath == null) {
+            throw Error('Please set Path to bpacHost.exe in BpacConfig');
+        }
+        const pro = spawn(`${BpacConfig.bpacHostPath}`, { stdio: ['pipe', 'pipe', 'pipe'] });
 
         this.path = BpacConfig.bpacHostPath;
         this.process = pro;
         this.available = true;
     }
 
-    async disconnect() {
+    async disconnect () {
         this.process?.kill();
 
         this.path = undefined;
         this.available = false;
     }
 
-    execute<TResult extends object>(command: BpacCommand) {
+    execute<TResult extends object> (command: BpacCommand) {
         const result = new Promise<BpacResult<TResult>>((resolve, reject) => {
             const resolveFn = ((data: Buffer) => {
                 this.process?.stdout?.removeListener('data', resolveFn);
                 this.process?.stderr?.removeListener('data', resolveFn);
-                resolve(new BpacResult<TResult>(data))
+                resolve(new BpacResult<TResult>(data));
             });
 
             const rejectFn = ((data: Buffer) => {
                 this.process?.stdout?.removeListener('data', resolveFn);
                 this.process?.stderr?.removeListener('data', resolveFn);
-                reject(new BpacResult<TResult>(data))
+                reject(new BpacResult<TResult>(data));
             });
 
-            this.process?.stdout?.on('data', (data: Buffer) => resolveFn(data))
-            this.process?.stderr?.on('data', (data: Buffer) => rejectFn(data))
-        })
+            this.process?.stdout?.on('data', (data: Buffer) => resolveFn(data));
+            this.process?.stderr?.on('data', (data: Buffer) => rejectFn(data));
+        });
 
         const buf = Buffer.allocUnsafe(4);  // Init buffer without writing all data to zeros
-        buf.writeInt32LE(JSON.stringify(command).length)
-        this.process?.stdin?.write(buf, 'utf-8')
-        this.process?.stdin?.write(JSON.stringify(command), 'utf-8')
+        buf.writeInt32LE(JSON.stringify(command).length);
+        this.process?.stdin?.write(buf, 'utf-8');
+        this.process?.stdin?.write(JSON.stringify(command), 'utf-8');
 
         return result;
     }
 
-    public check() {
-        if(!this.available) {
-            throw new Error('No connection to bpacHost Process')
+    public check () {
+        if (!this.available) {
+            throw new Error('No connection to bpacHost Process');
         }
     }
 }
