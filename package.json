@@ -1,0 +1,21 @@
+{
+  "name": "@nfa/bpac-js",
+  "version": "1.0.0",
+  "description": "Print on Brother Thermal-Printer via Nodejs. Some of the Bpac functionality is already available. The Server/Client also has to Install the official bpac-client to work with this library.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "keywords": [
+    "Brother",
+    "bpac",
+    "printing"
+  ],
+  "author": "Nils Falkenrich nilsfalkneu@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^20.11.20",
+    "typescript": "^5.3.3"
+  }
+}
