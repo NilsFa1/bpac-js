@@ -12,8 +12,6 @@ logs
 .fleet
 .idea
 
-package-lock.json
-
 # Local env files
 #.env
 #.env.*

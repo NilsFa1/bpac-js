@@ -14,6 +14,13 @@
     "printing"
   ],
   "author": "Nils Falkenrich <nilsfalkneu@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NilsFa1/bpac-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NilsFa1/bpac-js/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "@types/node": "^20.11.20",
