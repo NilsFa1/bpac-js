@@ -1,4 +1,5 @@
 import { BpacDocument } from './BpacDocument';
+import { BpacCommand } from './util';
 
 export class BpacObject {
     private readonly p: unknown;
@@ -14,7 +15,6 @@ export class BpacObject {
 
         this.document.connection.check();
 
-        // @ts-ignore
-        return this.document.connection.execute<void>({ method, p: this.p, text: text });
+        return this.document.connection.execute<never>({ method, p: this.p, text: text } as BpacCommand);
     }
 }
