@@ -3,7 +3,6 @@ import { BpacCommand, Connection, ExportType, PrintOptionConstants } from './uti
 
 export class BpacDocument {
     [Symbol.asyncDispose] = async () => {
-        console.log("using");
         await this.Close();
     };
 
@@ -80,6 +79,20 @@ export class BpacDocument {
 
         const arg = {
             method: command,
+        } as BpacCommand;
+
+        const r = await this.connection.execute<never>(arg);
+        return r.ret;
+    }
+
+    async StartPrint (docName: string, option: PrintOptionConstants) {
+        const command = "IDocument::StartPrint";
+        this.connection.check();
+
+        const arg = {
+            method: command,
+            docName,
+            option
         } as BpacCommand;
 
         const r = await this.connection.execute<never>(arg);

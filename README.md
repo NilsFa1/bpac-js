@@ -22,8 +22,7 @@ exportFile('TEST').then(() => console.log('success'))
 ```
 
 ## TODOS
-There are many more Methods available on the b-PAC-Client. The logic and command names can be found, when installing the official Browser-Extension and looking at the bpac.js file.
-On Windows you can find the Chrome-Extensions at: `C:\Users\<User>\AppData\Local\Google\Chrome\User Data\Default\Extensions`
+There are many more Methods available on the b-PAC-Client. The logic and command names can be found, in the bpac.js file in the Examples from the official bpac-SDK
 
 Furthermore a usefully extension would be, that the package can automatically detect where to find the bpackHost.exe. After Installation this creates a Windows-Registry entry, which points to the manifest.json.
 This file stores the path to the bpacHost.exe.
