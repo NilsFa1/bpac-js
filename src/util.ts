@@ -1,5 +1,8 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import { BpacConfig } from './config';
+import { promisified as regedit } from "regedit";
+import { readFileSync } from "fs";
+import {existsSync} from "node:fs";
 
 export enum PrintOptionConstants {
     bpoDefault = 0,
@@ -31,6 +34,33 @@ export enum ExportType {
     bexLbi,
     bexBmp,
     bexPAF,
+}
+
+export async function findBpacHostExe() {
+    try {
+        const regEntryPath = 'HKLM\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\com.brother.bpac'
+        const regentries = await regedit.list([regEntryPath]);
+        const regEntry = regentries[regEntryPath];
+        if(!regEntry.exists) {
+            throw new Error('No Windows Registry Entry found for bpac client sdk')
+        }
+        const path = regEntry.values[''].value.toString();
+        if(!existsSync(path)) {
+            throw new Error('manifest_chrome.json not found in location: ' + path + ' (Path found in Windows Registry Entry)');
+        }
+        const file = readFileSync(path, 'utf8')
+        const obj = JSON.parse(file.trim())
+        const bpacHostPath = path.replace('manifest_chrome.json', obj.path)
+        if(existsSync(bpacHostPath)) {
+            return bpacHostPath
+        }
+        throw new Error('BpacHost.exe not found in location from manifest_chrome.json: ' + bpacHostPath);
+    } catch (e) {
+        if(process.env.NODE_ENV === "debug"){
+            throw new Error(e);
+        }
+        return undefined;
+    }
 }
 
 export interface BpacCommand {
@@ -76,11 +106,15 @@ export class Connection {
     }
 
     async connect () {
+        if(BpacConfig.bpacHostPath == null || BpacConfig.bpacHostPath == '') {
+            BpacConfig.bpacHostPath = await findBpacHostExe()
+        }
+
         if (BpacConfig.bpacHostPath == null) {
             throw Error('Please set Path to bpacHost.exe in BpacConfig');
         }
         const pro = spawn(`${BpacConfig.bpacHostPath}`, { stdio: ['pipe', 'pipe', 'pipe'] });
-
+        
         this.path = BpacConfig.bpacHostPath;
         this.process = pro;
         this.available = true;

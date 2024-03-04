@@ -24,8 +24,8 @@ export class BpacDocument {
         };
 
         const result = await document.connection.execute<never>(arg);
-        if (!result) {
-            throw new Error("Fehler beim Öffnen des Dokuments");
+        if (!result.ret) {
+            throw new Error("Failed to open Document. Please check Path");
         }
 
         return document;
