@@ -2,7 +2,43 @@ import { ChildProcess, spawn } from 'node:child_process';
 import { BpacConfig } from './config';
 import { promisified as regedit } from "regedit";
 import { readFileSync } from "fs";
-import {existsSync} from "node:fs";
+import { existsSync } from "node:fs";
+
+export enum BpacObjectType
+{
+    bobText,
+    bobBarcode,
+    bobImage,
+    bobDateTime,
+    bobClipArt,
+}
+
+export enum BpacFontEffect
+{
+    bfeNoEffects,
+    bfeShadowLight,
+    bfeShadow,
+    bfeHorizontal,
+    bfeOutline,
+    bfeSurround,
+    bfeFrameOut,
+    bfeInvertTextColors,
+}
+
+export enum BpacObjectAttribute
+{
+    boaTextOption,
+    boaFontBold,
+    boaFontEffect,
+    boaFontItalics,
+    boaFontMaxPoint,
+    boaFontName,
+    boaFontStrikeout,
+    boaFontUnderline,
+    boaDateTimeAddSubtract,
+    boaClipArtGallery,
+    boaBarcodeProtocol,
+}
 
 export enum PrintOptionConstants {
     bpoDefault = 0,
@@ -74,7 +110,7 @@ export interface IBpacResult {
     [index: string]: unknown;
 }
 
-export class BpacResult<T extends object> {
+export class BpacResult<T extends object | boolean | number> {
     //Not Correcty Set?
     private length: number;
 
@@ -127,7 +163,7 @@ export class Connection {
         this.available = false;
     }
 
-    execute<TResult extends object> (command: BpacCommand) {
+    execute<TResult extends object | boolean | number> (command: BpacCommand) {
         const result = new Promise<BpacResult<TResult>>((resolve, reject) => {
             const resolveFn = ((data: Buffer) => {
                 this.process?.stdout?.removeListener('data', resolveFn);
