@@ -270,7 +270,7 @@ export class BpacDocument {
 
         const response = await this.connection.execute<{ p: number }>(arg);
         if (response.value.p >= 0) {
-            return new BpacPrinter(response.value.p);
+            return new BpacPrinter(response.value.p, this.connection);
         } else {
             return undefined;
         }
