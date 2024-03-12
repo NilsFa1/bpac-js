@@ -25,9 +25,9 @@ exportFile('TEST').then(() => console.log('success'))
 ```ts
 async function printLabel(lastName) {
   const doc = await BpacDocument.Open("<path to lbx template>")
-  const sId = await doc.GetObject("objLastName");
+  const o = await doc.GetObject("objLastName");
   await doc.SetPrinter(<PrinterName>, false);
-  await sId.setText(lastName);
+  await o.setText(lastName);
   await doc.StartPrint("Sample Label");
   await doc.PrintOut(1);
   await doc.EndPrint();
