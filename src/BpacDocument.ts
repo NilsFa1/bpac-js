@@ -167,7 +167,7 @@ export class BpacDocument {
 
         const response = await this.connection.execute<{ p: number }>(arg);
         if (response.value.p >= 0) {
-            return new BpacObjects(response.value.p);
+            return new BpacObjects(response.value.p, this);
         } else {
             return undefined;
         }
