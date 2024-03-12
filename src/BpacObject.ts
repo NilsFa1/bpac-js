@@ -10,11 +10,11 @@ export class BpacObject {
         this.document = doc;
     }
 
-    setText(text: string) {
+    async setText(text: string) {
         const method = "IObject::SetText";
 
         this.document.connection.check();
-        return this.document.connection.execute<never>({method, p: this.p, text: text} as BpacCommand);
+        return await this.document.connection.execute<never>({method, p: this.p, text: text} as BpacCommand);
     }
 
     getText() {
