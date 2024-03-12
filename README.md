@@ -5,7 +5,7 @@ Not all Features are available by now, but filling Templates and exporting or pr
 
 Before using the package you need to set up the path to the bpacHost.exe. By default this can be found for the 32Bit-Version at `C:\\Program Files (x86)\\Common Files\\Brother\\b-PAC\\bpacHost.exe`.
 
-## Example
+## Example - Export
 ```ts
 import { BpacConfig, BpacDocument, ExportType } from '@nfails/bpac-js';
 
@@ -19,6 +19,20 @@ await doc.Close()
 }
 
 exportFile('TEST').then(() => console.log('success'))
+```
+
+## Example - Print
+```ts
+async function printLabel(lastName) {
+  const doc = await BpacDocument.Open("<path to lbx template>")
+  const sId = await doc.GetObject("objLastName");
+  await doc.SetPrinter(<PrinterName>, false);
+  await sId.setText(lastName);
+  await doc.StartPrint("Sample Label");
+  await doc.PrintOut(1);
+  await doc.EndPrint();
+  await doc.Close();
+}
 ```
 
 ## TODOS
