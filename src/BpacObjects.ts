@@ -6,7 +6,7 @@ export class BpacObjects {
     public readonly p: unknown;
     public readonly document: BpacDocument;
 
-    constructor (obj: unknown, doc: BpacDocument) {
+    constructor(obj: unknown, doc: BpacDocument) {
         this.p = obj;
         this.document = doc;
     }
