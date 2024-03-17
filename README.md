@@ -1,11 +1,20 @@
 # bpac-js
 This is a library to print on Brother Thermal-Printer with nodejs. This works by sending the commands to the official b-PAC-client Component.
 
-Not all Features are available by now, but filling Templates and exporting or printing is possible.
+## Requierements
+### b-Pac Client Component
+The official b-PAC Client Component [Brother Download Website](https://support.brother.com/g/s/es/dev/en/bpac/download/index.html) must be installed. 
 
-Before using the package you need to set up the path to the bpacHost.exe. By default this can be found for the 32Bit-Version at `C:\\Program Files (x86)\\Common Files\\Brother\\b-PAC\\bpacHost.exe`.
+If the Installation-Location differs from the Default-Location it can happen, that the path to the `bpacHost.exe` has to be set manually in your program.
+````ts
+BpacConfig.bpacHostPath = "<path to bpacHost.exe>"
+````
 
-## Example - Export
+### Printer Driver
+Install the appropriate printer driver for your Brother printer on your system. This can also be found on the official Brother Website.
+
+## Usage
+### Example - Export
 ```ts
 import { BpacConfig, BpacDocument, ExportType } from '@nfails/bpac-js';
 
@@ -21,7 +30,7 @@ await doc.Close()
 exportFile('TEST').then(() => console.log('success'))
 ```
 
-## Example - Print
+### Example - Print
 ```ts
 async function printLabel(lastName) {
   const doc = await BpacDocument.Open("<path to lbx template>")
@@ -35,8 +44,5 @@ async function printLabel(lastName) {
 }
 ```
 
-## TODOS
-There are many more Methods available on the b-PAC-Client. The logic and command names can be found, in the bpac.js file in the Examples from the official bpac-SDK
-
-Furthermore a usefully extension would be, that the package can automatically detect where to find the bpackHost.exe. After Installation this creates a Windows-Registry entry, which points to the manifest.json.
-This file stores the path to the bpacHost.exe.
+## Contribute
+If you encounter issues or have suggestions, feel free to contribute to the project.
