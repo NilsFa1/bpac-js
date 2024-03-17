@@ -70,6 +70,19 @@ export enum ExportType {
 }
 
 export async function findBpacHostExe() {
+    const defaultLocations = [
+        'C:\\Program Files (x86)\\Common Files\\Brother\\b-PAC\\bpacHost.exe',
+        'C:\\Program Files\\Common Files\\Brother\\b-PAC\\bpacHost.exe'
+    ]
+
+    //First search in default location
+    for (const path of defaultLocations) {
+        if(existsSync(path)) {
+            return path;
+        }
+    }
+
+    //Search in Registry entry if written by Extension or Client Installation
     try {
         const regEntryPath = 'HKLM\\SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\com.brother.bpac'
         const regentries = await regedit.list([regEntryPath]);
