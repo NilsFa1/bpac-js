@@ -22,7 +22,7 @@ export class BpacPrinter {
             p: this.p
         } as BpacCommand;
 
-        const response = await this.connection.execute<{ printers: unknown }>(arg);
+        const response = await this.connection.execute<{ printers: string[] | undefined }>(arg);
         return response.value?.printers;
     }
 
@@ -74,7 +74,7 @@ export class BpacPrinter {
             p: this.p
         } as BpacCommand;
 
-        const response = await this.connection.execute<{ mediaIds: unknown }>(arg);
+        const response = await this.connection.execute<{ mediaIds: number[] | undefined }>(arg);
         return response.value?.mediaIds;
     }
 
@@ -87,7 +87,7 @@ export class BpacPrinter {
             p: this.p
         } as BpacCommand;
 
-        const response = await this.connection.execute<{ mediaNames: unknown }>(arg);
+        const response = await this.connection.execute<{ mediaNames: string[] | undefined }>(arg);
         return response.value?.mediaNames;
     }
 

@@ -384,7 +384,7 @@ export class BpacDocument {
         return response.value.orientation;
     }
 
-    async GetSheetNames(): Promise<unknown | undefined> {
+    async GetSheetNames(): Promise<string[] | undefined> {
         const command = "IDocument::GetSheetNames";
         this.connection.check();
 
@@ -392,7 +392,7 @@ export class BpacDocument {
             method: command
         } as BpacCommand;
 
-        const response = await this.connection.execute<{ names: unknown }>(arg);
+        const response = await this.connection.execute<{ names: string[] | undefined }>(arg);
         return response.value.names;
     }
 
