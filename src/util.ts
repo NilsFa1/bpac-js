@@ -192,9 +192,10 @@ export class Connection {
         });
 
         const buf = Buffer.allocUnsafe(4);  // Init buffer without writing all data to zeros
-        buf.writeInt32LE(JSON.stringify(command).length);
+        const strBuffer = new TextEncoder().encode(JSON.stringify(command));
+        buf.writeInt32LE(strBuffer.length);
         this.process?.stdin?.write(buf, 'utf-8');
-        this.process?.stdin?.write(JSON.stringify(command), 'utf-8');
+        this.process?.stdin?.write(strBuffer, 'utf-8');
 
         return result;
     }
