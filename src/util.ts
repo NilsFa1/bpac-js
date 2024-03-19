@@ -176,19 +176,19 @@ export class Connection {
     execute<TResult extends object | boolean | number>(command: BpacCommand) {
         const result = new Promise<BpacResult<TResult>>((resolve, reject) => {
             const resolveFn = ((data: Buffer) => {
-                this.process?.stdout?.removeListener('data', resolveFn);
-                this.process?.stderr?.removeListener('data', resolveFn);
+                this.process?.stdout?.removeAllListeners('data')
+                this.process?.stderr?.removeAllListeners('data')
                 resolve(new BpacResult<TResult>(data));
             });
 
             const rejectFn = ((data: Buffer) => {
-                this.process?.stdout?.removeListener('data', resolveFn);
-                this.process?.stderr?.removeListener('data', resolveFn);
+                this.process?.stdout?.removeAllListeners('data')
+                this.process?.stderr?.removeAllListeners('data')
                 reject(new BpacResult<TResult>(data));
             });
 
-            this.process?.stdout?.on('data', (data: Buffer) => resolveFn(data));
-            this.process?.stderr?.on('data', (data: Buffer) => rejectFn(data));
+            this.process?.stdout?.on('data', resolveFn);
+            this.process?.stderr?.on('data', rejectFn);
         });
 
         const buf = Buffer.allocUnsafe(4);  // Init buffer without writing all data to zeros
