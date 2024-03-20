@@ -3,6 +3,7 @@ import {BpacConfig} from './config';
 import {promisified as regedit} from "regedit";
 import {readFileSync} from "fs";
 import {existsSync} from "node:fs";
+import { endianness } from 'node:os';
 
 export enum BpacObjectType {
     bobText,
@@ -193,7 +194,13 @@ export class Connection {
 
         const buf = Buffer.allocUnsafe(4);  // Init buffer without writing all data to zeros
         const strBuffer = new TextEncoder().encode(JSON.stringify(command));
-        buf.writeInt32LE(strBuffer.length);
+
+        if(endianness() === 'LE') {
+            buf.writeInt32LE(strBuffer.length);
+        } else {
+            buf.writeInt32BE(strBuffer.length)
+        }
+
         this.process?.stdin?.write(buf, 'utf-8');
         this.process?.stdin?.write(strBuffer, 'utf-8');
 
