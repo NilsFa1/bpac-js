@@ -14,6 +14,9 @@ BpacConfig.bpacHostPath = "<path to bpacHost.exe>"
 Install the appropriate printer driver for your Brother printer on your system. This can also be found on the official Brother Website.
 
 ## Usage
+### Install
+`npm install @nfails/bpac-js` 
+
 ### Example - Export
 ```ts
 import { BpacConfig, BpacDocument, ExportType } from '@nfails/bpac-js';
