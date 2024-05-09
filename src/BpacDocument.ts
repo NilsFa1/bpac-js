@@ -611,7 +611,7 @@ export class BpacDocument {
         } as BpacCommand;
 
         const r = await this.connection.execute<never>(arg);
-        await this.connection.disconnect();
+        this.connection.disconnect();
         return r.ret;
     }
 }

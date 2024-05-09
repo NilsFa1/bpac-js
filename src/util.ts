@@ -122,7 +122,6 @@ export interface IBpacResult {
 }
 
 export class BpacResult<T extends object | boolean | number> {
-    //Not Correcty Set?
     private length: number;
 
     public value: T;
@@ -131,8 +130,13 @@ export class BpacResult<T extends object | boolean | number> {
     public ret: boolean;
 
     constructor(data: Buffer) {
-        this.length = +data.toString("utf-8", 0, 4);
-        const obj: IBpacResult = JSON.parse(data.toString("utf-8", 4));
+        if(endianness() === 'LE') {
+            this.length = data.readInt32LE();
+        } else {
+            this.length = data.readInt32BE();
+        }
+
+        const obj: IBpacResult = JSON.parse(data.toString("utf-8", 4, this.length + 4));
         this.method = obj.method;
         this.ret = obj.ret;
         delete obj.ret;
@@ -167,7 +171,7 @@ export class Connection {
         this.available = true;
     }
 
-    async disconnect() {
+    disconnect() {
         this.process?.kill();
 
         this.path = undefined;
@@ -177,18 +181,44 @@ export class Connection {
     execute<TResult extends object | boolean | number>(command: BpacCommand) {
         const result = new Promise<BpacResult<TResult>>((resolve, reject) => {
             const resolveFn = ((data: Buffer) => {
-                this.process?.stdout?.removeAllListeners('data')
-                this.process?.stderr?.removeAllListeners('data')
-                resolve(new BpacResult<TResult>(data));
+                try {
+                    this.process?.stdout?.removeAllListeners('data')
+                    this.process?.stderr?.removeAllListeners('data')
+                    resolve(new BpacResult<TResult>(data));
+                } catch (error) {
+                    this.disconnect()
+                    reject(error)
+                }
             });
 
             const rejectFn = ((data: Buffer) => {
                 this.process?.stdout?.removeAllListeners('data')
                 this.process?.stderr?.removeAllListeners('data')
-                reject(new BpacResult<TResult>(data));
+                reject(new Error(data.toString()));
             });
 
-            this.process?.stdout?.on('data', resolveFn);
+            let expectedMessageLength: number = undefined;
+            let lengthRead = 0;
+            let resultBuffer: Buffer = undefined;
+            this.process?.stdout?.on('data', (data: Buffer) => {
+                if(expectedMessageLength == undefined) {
+                    if(endianness() === 'LE') {
+                        expectedMessageLength = data.readInt32LE();
+                    } else {
+                        expectedMessageLength = data.readInt32BE();
+                    }
+
+                    //Add length size
+                    expectedMessageLength += 4;
+                    resultBuffer = Buffer.alloc(expectedMessageLength)
+                }
+
+                data.copy(resultBuffer, lengthRead)
+                lengthRead += data.length;
+                if(lengthRead >= expectedMessageLength) {
+                    resolveFn(resultBuffer)
+                }
+            });
             this.process?.stderr?.on('data', rejectFn);
         });
 
